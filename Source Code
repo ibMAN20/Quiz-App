@@ -1,0 +1,579 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Clock, CheckCircle, XCircle, RotateCcw, Trophy, User } from 'lucide-react';
+
+const QuizApp = () => {
+  // Quiz data - organized by your specific categories with 10 questions each
+  const quizData = {
+    'Roman History': [
+      {
+        question: "Who was the first Roman Emperor?",
+        options: ["Julius Caesar", "Augustus", "Nero", "Tiberius"],
+        correct: 1
+      },
+      {
+        question: "In which year was Rome traditionally founded?",
+        options: ["753 BC", "509 BC", "27 BC", "476 AD"],
+        correct: 0
+      },
+      {
+        question: "What was the primary Roman currency called?",
+        options: ["Denarius", "Solidus", "Aureus", "Sestertius"],
+        correct: 0
+      },
+      {
+        question: "Which emperor built the Colosseum?",
+        options: ["Nero", "Trajan", "Vespasian", "Hadrian"],
+        correct: 2
+      },
+      {
+        question: "What does 'SPQR' stand for?",
+        options: ["Senate and People of Rome", "Sacred Power of Rome", "Supreme Province of Rome", "Strength and Pride of Rome"],
+        correct: 0
+      },
+      {
+        question: "Who was the Roman general who crossed the Rubicon?",
+        options: ["Pompey", "Julius Caesar", "Mark Antony", "Crassus"],
+        correct: 1
+      },
+      {
+        question: "Which Roman road connected Rome to Brindisi?",
+        options: ["Via Flaminia", "Via Aurelia", "Via Appia", "Via Aemilia"],
+        correct: 2
+      },
+      {
+        question: "What year did the Western Roman Empire fall?",
+        options: ["410 AD", "455 AD", "476 AD", "493 AD"],
+        correct: 2
+      },
+      {
+        question: "Who was known as the 'Father of His Country' in Rome?",
+        options: ["Augustus", "Cicero", "Romulus", "Julius Caesar"],
+        correct: 1
+      },
+      {
+        question: "Which Roman emperor was known for his wall in Britain?",
+        options: ["Trajan", "Hadrian", "Marcus Aurelius", "Antoninus Pius"],
+        correct: 1
+      }
+    ],
+    'Human Anatomy': [
+      {
+        question: "How many bones are in the adult human body?",
+        options: ["206", "208", "204", "210"],
+        correct: 0
+      },
+      {
+        question: "Which is the largest organ in the human body?",
+        options: ["Liver", "Brain", "Skin", "Lungs"],
+        correct: 2
+      },
+      {
+        question: "What is the strongest muscle in the human body?",
+        options: ["Bicep", "Quadriceps", "Masseter (jaw)", "Heart"],
+        correct: 2
+      },
+      {
+        question: "How many chambers does the human heart have?",
+        options: ["2", "3", "4", "5"],
+        correct: 2
+      },
+      {
+        question: "Which part of the brain controls balance?",
+        options: ["Cerebrum", "Cerebellum", "Medulla", "Pons"],
+        correct: 1
+      },
+      {
+        question: "What is the longest bone in the human body?",
+        options: ["Tibia", "Femur", "Humerus", "Radius"],
+        correct: 1
+      },
+      {
+        question: "How many pairs of ribs do humans typically have?",
+        options: ["11", "12", "13", "14"],
+        correct: 1
+      },
+      {
+        question: "Which blood vessels carry blood away from the heart?",
+        options: ["Veins", "Arteries", "Capillaries", "Venules"],
+        correct: 1
+      },
+      {
+        question: "What is the smallest bone in the human body?",
+        options: ["Stapes", "Incus", "Malleus", "Hyoid"],
+        correct: 0
+      },
+      {
+        question: "How many vertebrae are in the human spine?",
+        options: ["31", "33", "35", "37"],
+        correct: 1
+      }
+    ],
+    'Programming Fundamentals': [
+      {
+        question: "What does 'API' stand for?",
+        options: ["Application Programming Interface", "Advanced Programming Integration", "Automated Program Instruction", "Application Process Integration"],
+        correct: 0
+      },
+      {
+        question: "Which of these is NOT a programming paradigm?",
+        options: ["Object-Oriented", "Functional", "Procedural", "Circular"],
+        correct: 3
+      },
+      {
+        question: "What is the time complexity of binary search?",
+        options: ["O(n)", "O(log n)", "O(n²)", "O(1)"],
+        correct: 1
+      },
+      {
+        question: "Which data structure follows LIFO principle?",
+        options: ["Queue", "Array", "Stack", "Linked List"],
+        correct: 2
+      },
+      {
+        question: "What does 'DRY' principle stand for?",
+        options: ["Don't Repeat Yourself", "Do Repeat Yourself", "Debug Rigorously Yearly", "Data Retrieval Yield"],
+        correct: 0
+      },
+      {
+        question: "What is the worst-case time complexity of QuickSort?",
+        options: ["O(n log n)", "O(n²)", "O(n)", "O(log n)"],
+        correct: 1
+      },
+      {
+        question: "Which of these is a interpreted language?",
+        options: ["C++", "Java", "Python", "Go"],
+        correct: 2
+      },
+      {
+        question: "What does 'SQL' stand for?",
+        options: ["Structured Query Language", "Simple Query Language", "Standard Query Language", "Sequential Query Language"],
+        correct: 0
+      },
+      {
+        question: "Which sorting algorithm is most efficient for small datasets?",
+        options: ["Merge Sort", "Quick Sort", "Insertion Sort", "Heap Sort"],
+        correct: 2
+      },
+      {
+        question: "What is the purpose of version control systems?",
+        options: ["Code compilation", "Track changes in code", "Execute programs", "Debug applications"],
+        correct: 1
+      }
+    ],
+    'General Knowledge': [
+      {
+        question: "Which is the largest ocean on Earth?",
+        options: ["Atlantic", "Indian", "Arctic", "Pacific"],
+        correct: 3
+      },
+      {
+        question: "What is the capital of Australia?",
+        options: ["Sydney", "Melbourne", "Canberra", "Perth"],
+        correct: 2
+      },
+      {
+        question: "Which element has the chemical symbol 'Fe'?",
+        options: ["Fluorine", "Iron", "Francium", "Fermium"],
+        correct: 1
+      },
+      {
+        question: "How many continents are there?",
+        options: ["5", "6", "7", "8"],
+        correct: 2
+      },
+      {
+        question: "Which planet is known as the 'Red Planet'?",
+        options: ["Venus", "Mars", "Jupiter", "Saturn"],
+        correct: 1
+      },
+      {
+        question: "What is the smallest country in the world?",
+        options: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"],
+        correct: 1
+      },
+      {
+        question: "Which river is the longest in the world?",
+        options: ["Amazon", "Nile", "Yangtze", "Mississippi"],
+        correct: 1
+      },
+      {
+        question: "Who painted the Mona Lisa?",
+        options: ["Michelangelo", "Leonardo da Vinci", "Raphael", "Donatello"],
+        correct: 1
+      },
+      {
+        question: "What is the hardest natural substance on Earth?",
+        options: ["Gold", "Iron", "Diamond", "Platinum"],
+        correct: 2
+      },
+      {
+        question: "Which gas makes up most of Earth's atmosphere?",
+        options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+        correct: 2
+      }
+    ]
+  };
+
+  // State management with explicit initial values to prevent version conflicts
+  const [currentScreen, setCurrentScreen] = useState('registration');
+  const [userName, setUserName] = useState('');
+  const [userGender, setUserGender] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(20);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+
+  // Avatar generation based on gender - using useCallback to prevent unnecessary re-renders
+  const renderAvatar = useCallback((gender, size = 'w-12 h-12') => {
+    const baseClasses = `${size} rounded-full flex items-center justify-center`;
+    
+    if (gender === 'male') {
+      return (
+        <div className={`${baseClasses} bg-blue-500`}>
+          <User className="w-6 h-6 text-white" />
+        </div>
+      );
+    } else {
+      return (
+        <div className={`${baseClasses} bg-pink-500`}>
+          <User className="w-6 h-6 text-white" />
+        </div>
+      );
+    }
+  }, []);
+
+  // Handle user registration with proper validation
+  const handleRegistration = useCallback(() => {
+    if (userName.trim() && userGender) {
+      setCurrentScreen('home');
+    }
+  }, [userName, userGender]);
+
+  // Time up handler with useCallback to prevent dependency issues
+  const handleTimeUp = useCallback(() => {
+    setShowResult(true);
+    const timeoutId = setTimeout(() => {
+      if (currentQuestionIndex < quizData[selectedCategory].length - 1) {
+        setCurrentQuestionIndex(prev => prev + 1);
+        setSelectedAnswer(null);
+        setTimeLeft(20);
+        setShowResult(false);
+      } else {
+        setQuizCompleted(true);
+        setCurrentScreen('results');
+      }
+    }, 1500);
+
+    // Return cleanup function to prevent memory leaks
+    return () => clearTimeout(timeoutId);
+  }, [currentQuestionIndex, selectedCategory, quizData]);
+
+  // Timer effect with proper cleanup to prevent version conflicts
+  useEffect(() => {
+    let timeoutId;
+    
+    if (currentScreen === 'quiz' && timeLeft > 0 && !showResult) {
+      timeoutId = setTimeout(() => {
+        setTimeLeft(prev => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && currentScreen === 'quiz') {
+      const cleanup = handleTimeUp();
+      return cleanup;
+    }
+
+    // Cleanup function to prevent memory leaks in all React versions
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeLeft, currentScreen, showResult, handleTimeUp]);
+
+  const startQuiz = useCallback((category) => {
+    setSelectedCategory(category);
+    setCurrentScreen('quiz');
+    setCurrentQuestionIndex(0);
+    setScore(0);
+    setTimeLeft(20);
+    setShowResult(false);
+    setQuizCompleted(false);
+    setSelectedAnswer(null);
+  }, []);
+
+  const handleAnswerSelect = useCallback((answerIndex) => {
+    setSelectedAnswer(answerIndex);
+  }, []);
+
+  const handleSubmitAnswer = useCallback(() => {
+    const currentQuestion = quizData[selectedCategory][currentQuestionIndex];
+    if (selectedAnswer === currentQuestion.correct) {
+      setScore(prev => prev + 1);
+    }
+    setShowResult(true);
+    
+    const timeoutId = setTimeout(() => {
+      if (currentQuestionIndex < quizData[selectedCategory].length - 1) {
+        setCurrentQuestionIndex(prev => prev + 1);
+        setSelectedAnswer(null);
+        setTimeLeft(20);
+        setShowResult(false);
+      } else {
+        setQuizCompleted(true);
+        setCurrentScreen('results');
+      }
+    }, 1500);
+
+    // Store timeout ID for cleanup if component unmounts
+    return () => clearTimeout(timeoutId);
+  }, [selectedAnswer, selectedCategory, currentQuestionIndex, quizData]);
+
+  const resetQuiz = useCallback(() => {
+    setCurrentScreen('home');
+    setSelectedCategory('');
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setScore(0);
+    setTimeLeft(20);
+    setQuizCompleted(false);
+    setShowResult(false);
+  }, []);
+
+  // Registration screen component
+  const renderRegistration = useCallback(() => (
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-teal-500 flex items-center justify-center p-6">
+      <div className="max-w-md w-full bg-white/20 backdrop-blur-sm rounded-xl p-8">
+        <h1 className="text-3xl font-bold text-white mb-6 text-center">Welcome to the Quiz App</h1>
+        <div className="mb-4">
+          <label className="block text-white mb-2">Enter your name:</label>
+          <input
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className="w-full p-3 rounded-xl bg-white/40 text-purple-900 font-semibold focus:outline-none"
+            placeholder="Your Name"
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-white mb-2">Select your gender:</label>
+          <div className="flex space-x-4">
+            <button
+              type="button"
+              className={`flex-1 py-3 rounded-xl font-semibold transition-all duration-300 ${userGender === 'male' ? 'bg-blue-500 text-white' : 'bg-white/40 text-purple-900'}`}
+              onClick={() => setUserGender('male')}
+            >
+              Male
+            </button>
+            <button
+              type="button"
+              className={`flex-1 py-3 rounded-xl font-semibold transition-all duration-300 ${userGender === 'female' ? 'bg-pink-500 text-white' : 'bg-white/40 text-purple-900'}`}
+              onClick={() => setUserGender('female')}
+            >
+              Female
+            </button>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleRegistration}
+          disabled={!userName.trim() || !userGender}
+          className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${userName.trim() && userGender ? 'bg-white text-purple-600 hover:bg-blue-50' : 'bg-white/20 text-white/60 cursor-not-allowed'}`}
+        >
+          Start Quiz
+        </button>
+      </div>
+    </div>
+  ), [userName, userGender, handleRegistration]);
+
+  const renderHome = useCallback(() => (
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-teal-500 p-6">
+      <div className="max-w-md mx-auto">
+        {/* User Profile Header */}
+        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 mb-6">
+          <div className="flex items-center">
+            {renderAvatar(userGender)}
+            <div className="ml-4">
+              <h2 className="text-white text-lg font-semibold">Hello, {userName}!</h2>
+              <p className="text-blue-100 text-sm">Ready for your quiz challenge?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2">Choose Your Category</h1>
+          <p className="text-blue-100">Test your knowledge across 4 specialized topics</p>
+        </div>
+        
+        <div className="space-y-4">
+          {Object.keys(quizData).map((category) => (
+            <button
+              key={category}
+              type="button"
+              onClick={() => startQuiz(category)}
+              className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-6 text-white hover:bg-white/30 transition-all duration-300 transform hover:scale-105"
+            >
+              <h3 className="text-xl font-semibold mb-2">{category}</h3>
+              <p className="text-blue-100 text-sm">{quizData[category].length} questions • 20 seconds each</p>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  ), [userName, userGender, renderAvatar, startQuiz, quizData]);
+
+  const renderQuiz = useCallback(() => {
+    const currentQuestion = quizData[selectedCategory][currentQuestionIndex];
+    const progress = ((currentQuestionIndex + 1) / quizData[selectedCategory].length) * 100;
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-teal-500 p-6">
+        <div className="max-w-md mx-auto">
+          {/* Header */}
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center">
+                {renderAvatar(userGender, 'w-8 h-8')}
+                <div className="ml-2">
+                  <h2 className="text-white font-semibold">{selectedCategory}</h2>
+                  <p className="text-blue-100 text-xs">{userName}</p>
+                </div>
+              </div>
+              <div className="flex items-center text-white">
+                <Clock className="w-4 h-4 mr-1" />
+                <span className={`font-bold ${timeLeft <= 5 ? 'text-red-300' : ''}`}>
+                  {timeLeft}s
+                </span>
+              </div>
+            </div>
+            
+            {/* Progress bar */}
+            <div className="w-full bg-white/20 rounded-full h-2">
+              <div 
+                className="bg-white h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <p className="text-blue-100 text-sm mt-2">
+              Question {currentQuestionIndex + 1} of {quizData[selectedCategory].length}
+            </p>
+          </div>
+
+          {/* Question */}
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 mb-6">
+            <h3 className="text-white text-lg font-medium mb-6">
+              {currentQuestion.question}
+            </h3>
+            
+            <div className="space-y-3">
+              {currentQuestion.options.map((option, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => handleAnswerSelect(index)}
+                  disabled={showResult}
+                  className={`w-full p-4 rounded-xl text-left transition-all duration-300 ${
+                    showResult
+                      ? index === currentQuestion.correct
+                        ? 'bg-green-500/80 text-white'
+                        : selectedAnswer === index
+                        ? 'bg-red-500/80 text-white'
+                        : 'bg-white/20 text-white'
+                      : selectedAnswer === index
+                      ? 'bg-white/40 text-white border-2 border-white'
+                      : 'bg-white/20 text-white hover:bg-white/30'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <span className="mr-3 font-semibold">
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    <span>{option}</span>
+                    {showResult && index === currentQuestion.correct && (
+                      <CheckCircle className="w-5 h-5 ml-auto text-white" />
+                    )}
+                    {showResult && selectedAnswer === index && index !== currentQuestion.correct && (
+                      <XCircle className="w-5 h-5 ml-auto text-white" />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Submit button */}
+          {!showResult && (
+            <button
+              type="button"
+              onClick={handleSubmitAnswer}
+              disabled={selectedAnswer === null}
+              className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 ${
+                selectedAnswer !== null
+                  ? 'bg-white text-purple-600 hover:bg-blue-50'
+                  : 'bg-white/20 text-white/60 cursor-not-allowed'
+              }`}
+            >
+              Submit Answer
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }, [quizData, selectedCategory, currentQuestionIndex, renderAvatar, userGender, userName, timeLeft, showResult, selectedAnswer, handleAnswerSelect, handleSubmitAnswer]);
+
+  const renderResults = useCallback(() => {
+    const totalQuestions = quizData[selectedCategory].length;
+    const percentage = Math.round((score / totalQuestions) * 100);
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-teal-500 p-6">
+        <div className="max-w-md mx-auto text-center">
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-8 mb-6">
+            <Trophy className="w-16 h-16 text-yellow-300 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-white mb-2">Quiz Complete!</h2>
+            <p className="text-blue-100 mb-6">{selectedCategory} Category</p>
+            
+            <div className="bg-white/20 rounded-xl p-6 mb-6">
+              <div className="text-5xl font-bold text-white mb-2">{score}</div>
+              <div className="text-white text-lg">out of {totalQuestions}</div>
+              <div className="text-2xl font-semibold text-yellow-300 mt-2">
+                {percentage}%
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => startQuiz(selectedCategory)}
+                className="w-full bg-white/20 hover:bg-white/30 text-white py-3 rounded-xl font-semibold transition-all duration-300"
+              >
+                Try Again
+              </button>
+              <button
+                type="button"
+                onClick={resetQuiz}
+                className="w-full bg-white text-purple-600 hover:bg-blue-50 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Back to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }, [quizData, selectedCategory, score, startQuiz, resetQuiz]);
+
+  // Main render function with proper screen routing
+  return (
+    <div>
+      {currentScreen === 'registration' && renderRegistration()}
+      {currentScreen === 'home' && renderHome()}
+      {currentScreen === 'quiz' && renderQuiz()}
+      {currentScreen === 'results' && renderResults()}
+    </div>
+  );
+};
+
+export default QuizApp;
